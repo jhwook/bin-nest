@@ -16,11 +16,13 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  // 회원가입
   @Post('/signup')
   create(@Body() body) {
     return this.usersService.create(body);
   }
 
+  // 로그인
   @Post('/login')
   login(@Body() body) {
     return this.authService.jwtLogIn(body);

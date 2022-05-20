@@ -19,8 +19,8 @@ export class AuthService {
     const findUser = await this.USERS_REPOSITORY.findOne({ where: { email } });
     const user = findUser.get();
 
-    if (!user) {
-      throw new HttpException('please check your email or password', 401);
+    if (findUser) {
+      throw new HttpException('this email already existed', 401);
     }
 
     const isPasswordValidated: boolean = await bcrypt.compare(
@@ -35,21 +35,36 @@ export class AuthService {
     const payload = { email, sub: user.id };
 
     return {
-      isLogin: true,
-      userInfo: user,
+      user,
       token: this.jwtService.sign(payload),
     };
   }
 
-  googleLogin(req) {
+  async googleLogin(req) {
     console.log(req.user);
+
+    const { userId, email } = req.user;
 
     if (!req.user) {
       return 'No user from google';
     }
-    return {
-      message: 'User information from google',
-      user: req.user,
-    };
+
+    const findOauthUser = await this.USERS_REPOSITORY.findOne({
+      where: { oauth_id: userId },
+    });
+
+    console.log('findOauthUser', findOauthUser);
+
+    if (findOauthUser) {
+      throw new HttpException('please check your email or password', 401);
+    }
+
+    const user = await this.USERS_REPOSITORY.create({
+      email,
+      oauth_id: userId,
+      oauth: true,
+    });
+
+    return user;
   }
 }

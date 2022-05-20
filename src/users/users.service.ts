@@ -14,7 +14,7 @@ export class UsersService {
 
   // 회원가입
   async create(body): Promise<User> {
-    const { email, password, oauth, code } = body;
+    const { email, password, code } = body;
 
     if (!email || !password) {
       throw new HttpException(
