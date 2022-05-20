@@ -1,4 +1,5 @@
-import { User } from './../users/user.entity';
+import { UserPoint } from './../users/entities/user.point.entity';
+import { User } from '../users/entities/user.entity';
 import { Sequelize } from 'sequelize-typescript';
 
 export const databaseProviders = [
@@ -12,8 +13,9 @@ export const databaseProviders = [
         username: 'root',
         password: '1234',
         database: 'aaa',
+        sync: { force: true },
       });
-      sequelize.addModels([User]);
+      sequelize.addModels([User, UserPoint]);
       await sequelize.sync();
       return sequelize;
     },
