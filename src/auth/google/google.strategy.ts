@@ -1,18 +1,25 @@
+import { AuthService } from './../auth.service';
+import { User } from 'src/users/entities/user.entity';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { config } from 'dotenv';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 config();
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor() {
+  constructor(
+    @Inject('USERS_REPOSITORY') private readonly USERS_REPOSITORY: typeof User,
+    private readonly authService: AuthService,
+  ) {
     super({
       clientID: process.env.GOOGLE_CLIENT_ID, // 1
       clientSecret: process.env.GOOGLE_SECRET,
       callbackURL: 'http://localhost:3000/users/google/callback',
       scope: ['email', 'profile', 'openid'],
+      accessType: 'offline',
+      prompt: 'consent',
     });
   }
 
@@ -31,6 +38,21 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       accessToken,
       refreshToken,
     };
+    console.log(user);
+
+    // const user = await this.authService.validateUser(userInfo.email);
+    // if (user === null) {
+    //   // 유저가 없을때
+    //   console.log('일회용 토큰 발급');
+    //   const once_token = this.authService.onceToken(userInfo);
+    //   return { once_token, type: 'once' };
+    // }
+
+    // // 유저가 있을때
+    // console.log('로그인 토큰 발급');
+    // const access_token = await this.authService.createLoginToken(user);
+    // const refresh_token = await this.authService.createRefreshToken(user);
+    // return { access_token, refresh_token, type: 'login' };
     done(null, user);
   }
 }

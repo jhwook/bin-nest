@@ -1,8 +1,17 @@
+import { GoogleAuthGuard } from './../auth/google/google.guard';
 /* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { AuthService } from './../auth/auth.service';
 import { UsersService } from './users.service';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Session,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
@@ -11,9 +20,18 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly authService: AuthService,
   ) {}
-  @Get('/all')
-  getAll() {
-    return this.usersService.findAll();
+
+  @Post()
+  async indAll(@Body() Body, @Session() session: Record<string, any>) {
+    // session.visits = session.visits ? session.visits + 1 : 1;
+    console.log(Body);
+
+    await session.save(function () {
+      session.userInfo = Body;
+      return { data: session.userInfo };
+    });
+    // console.log('visits', session.visits);
+    console.log(session);
   }
 
   // 회원가입
@@ -29,12 +47,13 @@ export class UsersController {
   }
 
   @Get('google') // 1
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {}
 
   @Get('google/callback') // 2
-  @UseGuards(AuthGuard('google'))
+  @UseGuards(GoogleAuthGuard)
   googleAuthRedirect(@Req() req) {
+    console.log(req.user);
     return this.authService.googleLogin(req);
   }
 }

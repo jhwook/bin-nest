@@ -15,7 +15,7 @@ import { usersProviders } from 'src/users/users.providers';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1y' },
+      signOptions: { expiresIn: '6h' },
     }),
     forwardRef(() => UsersModule),
   ],
