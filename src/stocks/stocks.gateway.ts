@@ -8,7 +8,6 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { io } from 'socket.io-client';
 import { WebSocket } from 'ws';
 
 @WebSocketGateway()
@@ -28,7 +27,7 @@ export class StocksGateway
 
   handleConnection() {
     function Unix_timestamp(t) {
-      const date = new Date(t * 1000);
+      const date = new Date(t);
       const year = date.getFullYear();
       const month = '0' + (date.getMonth() + 1);
       const day = '0' + date.getDate();

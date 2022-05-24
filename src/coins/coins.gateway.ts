@@ -55,21 +55,22 @@ export class CoinsGateway
         const tradesUpdate = marketData.trades;
         if (tradesUpdate) {
           tradesUpdate.forEach((tradeUpdate) => {
-            console.log(
-              marketCache[marketData.market.id], // access market info from cache
-              tradeUpdate.side,
-              'Price: ',
-              tradeUpdate.price,
-              'Amount: ',
-              tradeUpdate.amount,
-              tradeUpdate.timestamp,
-            );
+            // console.log(
+            //   marketCache[marketData.market.id], // access market info from cache
+            //   tradeUpdate.side,
+            //   'Price: ',
+            //   tradeUpdate.price,
+            //   'Amount: ',
+            //   tradeUpdate.amount,
+            //   tradeUpdate.timestamp,
+            // );
             const obj = {
               pair: marketCache[marketData.market.id].pair,
               price: tradeUpdate.price,
               timestamp: tradeUpdate.timestamp,
             };
-            socket.emit('hello', { data: obj });
+            console.log(obj);
+            // socket.emit('hello', { data: obj });
           });
         }
       });
