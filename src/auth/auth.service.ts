@@ -28,10 +28,6 @@ export class AuthService {
     const findUser = await this.USERS_REPOSITORY.findOne({ where: { email } });
     const user = findUser.get();
 
-    if (findUser) {
-      throw new HttpException('this email already existed', 401);
-    }
-
     const isPasswordValidated: boolean = await bcrypt.compare(
       password,
       user.password,
@@ -118,9 +114,12 @@ export class AuthService {
         oauth_id: userId,
         oauth: true,
       });
-      return user;
+      const payload = { email, sub: user.id };
+      return { user, accessToken: this.jwtService.sign(payload) };
     }
 
-    return findOauthUser;
+    const payload = { email, sub: findOauthUser.id };
+
+    return { findOauthUser, accessToken: this.jwtService.sign(payload) };
   }
 }

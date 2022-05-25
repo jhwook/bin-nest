@@ -8,11 +8,14 @@ import {
   Controller,
   Get,
   Post,
+  Redirect,
   Req,
+  Res,
   Session,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
 
 @Controller('users')
 export class UsersController {
@@ -22,7 +25,7 @@ export class UsersController {
   ) {}
 
   @Post()
-  async indAll(@Body() Body, @Session() session: Record<string, any>) {
+  async findAll(@Body() Body, @Session() session: Record<string, any>) {
     // session.visits = session.visits ? session.visits + 1 : 1;
     console.log(Body);
 
@@ -32,6 +35,13 @@ export class UsersController {
     });
     // console.log('visits', session.visits);
     console.log(session);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/auth')
+  auth(@Req() req) {
+    console.log(req.user);
+    return req.user;
   }
 
   // 회원가입
@@ -48,12 +58,32 @@ export class UsersController {
 
   @Get('google') // 1
   @UseGuards(GoogleAuthGuard)
-  async googleAuth(@Req() req) {}
+  async googleAuth(@Req() req) {
+    console.log(req);
+  }
 
+  @Redirect('http://localhost:3001')
   @Get('google/callback') // 2
   @UseGuards(GoogleAuthGuard)
-  googleAuthRedirect(@Req() req) {
-    console.log(req.user);
-    return this.authService.googleLogin(req);
+  async googleAuthRedirect(
+    @Req() req,
+    @Res() res,
+    @Session() session: Record<string, any>,
+  ) {
+    console.log(req);
+    const googleUserData: any = await this.authService.googleLogin(req);
+    console.log(
+      '====================================================',
+      googleUserData,
+    );
+
+    // res.cookie('accessToken', req.user.accessToken);
+    res.cookie('accessToken', googleUserData.accessToken);
+    // await session.save(function () {
+    //   session.userId = req.user.userId;
+    // console.log(session);
+    // return { data: session.userInfo };
+    // });
+    // res.end();
   }
 }
