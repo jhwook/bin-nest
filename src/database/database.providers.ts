@@ -13,7 +13,7 @@ export const databaseProviders = [
         username: 'root',
         password: '1234',
         database: 'aaa',
-        sync: { force: true },
+        sync: { alter: true },
       });
       sequelize.addModels([User, UserPoint]);
       await sequelize.sync();

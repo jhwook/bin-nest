@@ -76,7 +76,7 @@ export class ExratesGateway
         }
       });
     };
-    connect();
+    // connect();
 
     //   const socket = io('https://marketdata.tradermade.com', {
     //     reconnection: true,

@@ -1,7 +1,9 @@
+import { ExtractJwt } from 'passport-jwt';
 import { AuthService } from './../auth.service';
 import { User } from 'src/users/entities/user.entity';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { GoogleOauthJWTStrategy } from 'passport-google-oauth-jwt';
 import { config } from 'dotenv';
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -20,6 +22,10 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile', 'openid'],
       accessType: 'offline',
       prompt: 'consent',
+      state: true,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      issuer: 'https://accounts.google.com',
+      algorithms: ['RS256'],
     });
   }
 
@@ -30,6 +36,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     done: VerifyCallback,
   ): Promise<any> {
     const { name, emails } = profile;
+    // console.log(profile);
 
     const user = {
       userId: profile.id,
@@ -53,6 +60,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     // const access_token = await this.authService.createLoginToken(user);
     // const refresh_token = await this.authService.createRefreshToken(user);
     // return { access_token, refresh_token, type: 'login' };
-    done(null, user);
+    return done(null, user);
   }
 }

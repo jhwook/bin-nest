@@ -5,6 +5,7 @@ import { ServerOptions } from 'socket.io';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 
 export class SocketAdapter extends IoAdapter {
   createIOServer(
@@ -25,6 +26,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.use(cookieParser());
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: true,
+      // store: new FileStore(),
+    }),
+  );
   app.enableCors({
     origin: true,
     credentials: true,

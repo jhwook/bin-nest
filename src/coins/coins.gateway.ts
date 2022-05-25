@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { StreamClient, RESTClient } from 'cw-sdk-node';
 import { Server, Socket } from 'socket.io';
+import * as moment from 'moment';
 
 @WebSocketGateway()
 export class CoinsGateway
@@ -66,8 +67,10 @@ export class CoinsGateway
             // );
             const obj = {
               pair: marketCache[marketData.market.id].pair,
-              price: tradeUpdate.price,
-              timestamp: tradeUpdate.timestamp,
+              price: +tradeUpdate.price,
+              timestamp: moment(tradeUpdate.timestamp).format(
+                'YYYY-MM-DD HH:mm:ss',
+              ),
             };
             console.log(obj);
             // socket.emit('hello', { data: obj });

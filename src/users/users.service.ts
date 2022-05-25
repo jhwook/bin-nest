@@ -23,6 +23,12 @@ export class UsersService {
       );
     }
 
+    const findUser = await this.USERS_REPOSITORY.findOne({ where: { email } });
+
+    if (findUser) {
+      throw new HttpException('this email already existed', 401);
+    }
+
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
 
